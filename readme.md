@@ -1,0 +1,1 @@
+This crate is my notes while reading [Rust atomics and locks](https://marabos.nl/atomics/)
