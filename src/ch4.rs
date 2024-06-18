@@ -169,20 +169,21 @@ fn safe_spin_lock() {
 
 #[test]
 fn poison_spin_lock() {
+    // TODO: figure out how to poison SpinLock
     static DATA: SpinLock<Vec<usize>> = SpinLock::new(Vec::new());
 
     thread::spawn(move || {
         let data = DATA.lock();
-        panic!("uh oh the guard is never dropped!");
+        // panic!("uh oh the guard is never dropped!"); // panic calls destructors
     });
-
-    thread::sleep(Duration::from_secs(3));
 
     for i in 0..10 {
         thread::spawn(move || {
             DATA.lock().push(i);
         });
     }
+
+    thread::sleep(Duration::from_secs(1));
 
     println!("Data:");
     for i in DATA.lock().iter() {
