@@ -1,4 +1,4 @@
-//! Summary
+//! Building Our Own Spin Lock Summary
 //! - A spin lock is a mutex that busy-loops, or spins, while waiting.
 //! - Spinning can reduce latency, but can also be a waste of clock cycles and reduce performance.
 //! - A spin loop hint, std::hint::spin_loop(), can be used to inform the

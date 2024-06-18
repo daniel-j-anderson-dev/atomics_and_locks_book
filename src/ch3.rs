@@ -1,4 +1,4 @@
-//! Summary
+//!  Memory Ordering Summary
 //! - There might not be a global consistent order of all atomic operations, as things can appear to happen in a different order from different threads.
 //! - However, each individual atomic variable has its own total modification order, regardless of memory ordering, which all threads agree on.
 //! - The order of operations is formally defined through happens-before relationships.
