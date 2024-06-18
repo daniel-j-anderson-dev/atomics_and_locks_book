@@ -9,17 +9,17 @@
 //! - Acquire-loading the value from a release-store establishes a happens-before relationship. This value may be modified by any number of fetch-and-modify and compare-and-exchange operations.
 //! - A consume-load would be a lightweight version of an acquire-load, if it existed.
 //! - Sequentially consistent ordering results in a globally consistent order of operations, but is almost never necessary and can make code review more complicated.
-//! - Fences allow you to combine the memory ordering of multiple operations or apply a memory ordering conditionally. 
-    
+//! - Fences allow you to combine the memory ordering of multiple operations or apply a memory ordering conditionally.
+
 use super::*;
 
 #[test]
 fn seqcst() {
     static IS_THREAD_A_ACCESSING_S: AtomicBool = AtomicBool::new(false);
     static IS_THREAD_B_ACCESSING_S: AtomicBool = AtomicBool::new(false);
-    
+
     static mut S: String = String::new();
-    
+
     let a = thread::spawn(|| {
         // raise the accessing S from thread a flag
         IS_THREAD_A_ACCESSING_S.store(true, SeqCst);
@@ -75,7 +75,7 @@ fn conditional_fence() {
     // thread::sleep(Duration::from_millis(500));
 
     let ready: [bool; 10] = std::array::from_fn(|i| READY[i].load(Relaxed));
-    
+
     if ready.contains(&true) {
         fence(Acquire);
         for i in 0..10 {
