@@ -1,7 +1,11 @@
 pub use std::{
     cell::UnsafeCell,
+    collections::VecDeque,
     ptr,
-    sync::atomic::{Ordering::*, *},
+    sync::{
+        atomic::{Ordering::*, *},
+        Condvar, Mutex,
+    },
     thread,
     time::Duration,
 };

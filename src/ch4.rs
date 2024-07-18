@@ -102,7 +102,7 @@ mod safe_spin_lock {
         }
         pub fn lock<'a>(&'a self) -> Guard<'a, T> {
             self.protector.lock();
-            return Guard { guarded: self };
+            return Guard { inner: self };
         }
     }
 
@@ -114,14 +114,15 @@ mod safe_spin_lock {
     ///     - guard's field is private
     ///     - [Guard] is defined in a unique module
     ///
-    /// [Guard] is [Deref] as `T` and [DerefMut] as `T`
+    /// [Guard] is [Deref] and [DerefMut] as `T
     pub struct Guard<'a, T> {
-        guarded: &'a SpinLock<T>,
+        inner: &'a SpinLock<T>,
     }
     unsafe impl<T: Sync> Sync for Guard<'_, T> {}
     impl<T> Drop for Guard<'_, T> {
         fn drop(&mut self) {
-            self.guarded.protector.unlock();
+            println!("Guard::drop called");
+            self.inner.protector.unlock();
         }
     }
     impl<T> Deref for Guard<'_, T> {
@@ -130,7 +131,7 @@ mod safe_spin_lock {
             // SAFETY: Guard's invariant is that it only exists
             // when there is exclusive access to the inner T.
             // self.guarded.protector.is_locked == true
-            return unsafe { &*self.guarded.value.get() };
+            return unsafe { &*self.inner.value.get() };
         }
     }
     impl<T> DerefMut for Guard<'_, T> {
@@ -138,7 +139,7 @@ mod safe_spin_lock {
             // SAFETY: Guard's invariant is that it only exists
             // when there is exclusive access to the inner T.
             // self.guarded.protector.is_locked == true
-            return unsafe { &mut *self.guarded.value.get() };
+            return unsafe { &mut *self.inner.value.get() };
         }
     }
 }
@@ -174,7 +175,7 @@ fn poison_spin_lock() {
 
     thread::spawn(move || {
         let data = DATA.lock();
-        // panic!("uh oh the guard is never dropped!"); // panic calls destructors
+        panic!("uh oh the guard is never dropped!"); // panic calls destructors
     });
 
     for i in 0..10 {
@@ -185,8 +186,5 @@ fn poison_spin_lock() {
 
     thread::sleep(Duration::from_secs(1));
 
-    println!("Data:");
-    for i in DATA.lock().iter() {
-        print!("{}, ", i);
-    }
+    println!("Data: {:?}", *DATA.lock());
 }
