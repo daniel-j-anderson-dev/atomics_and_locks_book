@@ -39,3 +39,39 @@ impl<T> Channel<T> {
         }
     }
 }
+
+pub struct OneshotChannel<T> {
+    message: UnsafeCell<MaybeUninit<T>>,
+    is_message_ready: AtomicBool,
+}
+unsafe impl<T> Sync for Channel<T> where T: Send {}
+impl<T> OneshotChannel<T> {
+    pub const fn new() -> Self {
+        Self {
+            message: UnsafeCell::new(MaybeUninit::uninit()),
+            is_message_ready: AtomicBool::new(false),
+        }
+    }
+
+    /// # Safety
+    /// - Only call this method once!
+    pub unsafe fn send(&mut self, message: T) {
+        let maybe_uninit_message = &mut *self.message.get();
+        maybe_uninit_message.write(message);
+
+        // Notify that a message is ready
+        self.is_message_ready.store(true, Release);
+    }
+
+    pub fn is_message_ready(&self) -> bool {
+        self.is_message_ready.load(Acquire)
+    }
+
+    /// # Safety:
+    /// - Only call this method after [OneshotChannel::is_message_ready] returns `true`
+    /// - Only call this method once
+    pub unsafe fn receive(&mut self) -> T {
+        let maybe_uninit_message = &*self.message.get();
+        maybe_uninit_message.assume_init_read()
+    }
+}
