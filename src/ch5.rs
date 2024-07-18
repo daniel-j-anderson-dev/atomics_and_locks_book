@@ -23,11 +23,17 @@ impl<T> Channel<T> {
     }
 
     pub fn receive(&mut self) -> Result<T, Box<dyn std::error::Error + '_>> {
+        // lock the queue
         let mut guard = self.queue.lock()?;
-        
+
+        // receiving loop
         loop {
+            // check if there is a message in the queue
             match guard.pop_front() {
+                // return the message
                 Some(message) => return Ok(message),
+
+                // or wait for the message to be ready
                 None => guard = self.message_ready.wait(guard)?,
             }
         }
