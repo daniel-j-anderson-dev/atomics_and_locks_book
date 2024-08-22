@@ -1,4 +1,4 @@
-//! Summary
+//! Building Our Own Channels Summary
 //! - A channel is used to send messages between threads.
 //! - A simple and flexible, but potentially inefficient, channel is relatively easy to implement
 //! with just a Mutex and a Condvar.
