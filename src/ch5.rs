@@ -1,3 +1,20 @@
+//! Summary
+//! - A channel is used to send messages between threads.
+//! - A simple and flexible, but potentially inefficient, channel is relatively easy to implement
+//! with just a Mutex and a Condvar.
+//! - A one-shot channel is a channel designed to send only one message.
+//! - The MaybeUninit<T> type can be used to represent a potentially not-yet-initialized T.
+//! Its interface is mostly unsafe, making its user responsible for tracking whether it has been initialized,
+//! not duplicating non-Copy data, and dropping its contents if necessary.
+//! - Not dropping objects (also called leaking or forgetting) is safe, but frowned upon when done without good reason.
+//! - Panicking is an important tool for creating a safe interface.
+//! - Taking a non-Copy object by value can be used to prevent something from being done more than once.
+//! - Exclusively borrowing and splitting borrows can be a powerful tool for forcing correctness.
+//! - We can make sure an object stays on the same thread by making sure its type does not implement Send,
+//! which can be achieved with the PhantomData marker type.
+//! - Every design and implementation decision involves a trade-off and can best be made with a specific use case in mind.
+//! - Designing something without a use case can be fun and educational, but can turn out to be an endless task.
+
 use super::*;
 
 pub struct SimpleChannel<T> {
