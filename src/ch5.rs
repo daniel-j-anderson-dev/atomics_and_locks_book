@@ -29,7 +29,7 @@ impl<T> SimpleChannel<T> {
         }
     }
 
-    pub fn send(&mut self, message: T) -> Result<(), Box<dyn std::error::Error + '_>> {
+    pub fn send(&mut self, message: T) -> Result<(), PoisonError<MutexGuard<VecDeque<T>>>> {
         // add the message to the queue
         self.queue.lock()?.push_front(message);
 
@@ -39,9 +39,9 @@ impl<T> SimpleChannel<T> {
         Ok(())
     }
 
-    pub fn receive(&mut self) -> Result<T, Box<dyn std::error::Error + '_>> {
+    pub fn receive(&mut self) -> Result<T, PoisonError<MutexGuard<VecDeque<T>>>> {
         // lock the queue
-        let mut guard = self.queue.lock()?;
+        let mut guard: std::sync::MutexGuard<VecDeque<T>> = self.queue.lock()?;
 
         // receiving loop
         loop {

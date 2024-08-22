@@ -5,7 +5,7 @@ pub(crate) use std::{
     ptr,
     sync::{
         atomic::{Ordering::*, *},
-        Arc, Condvar, Mutex,
+        Arc, Condvar, Mutex, MutexGuard, PoisonError,
     },
     thread,
     time::Duration,
