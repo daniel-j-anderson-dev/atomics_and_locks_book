@@ -88,10 +88,10 @@ impl<T> OneshotChannel<T> {
             panic!("Can't send more than one message. Only call OneshotChannel::send once!!!!");
         }
 
-        // Safety: the message can't be in use because of the panic
+        // Safety: the channel message can't be in use because of the panic
         unsafe {
-            let maybe_uninit_message = &mut *self.message.get();
-            maybe_uninit_message.write(message);
+            let channel_message = &mut *self.message.get();
+            channel_message.write(message);
         }
 
         // notify the message is ready
@@ -110,8 +110,8 @@ impl<T> OneshotChannel<T> {
 
         // Safety: The message is initialized at this point because of the panic
         unsafe {
-            let maybe_uninit_message = &*self.message.get();
-            maybe_uninit_message.assume_init_read()
+            let channel_message = &*self.message.get();
+            channel_message.assume_init_read()
         }
     }
 }
