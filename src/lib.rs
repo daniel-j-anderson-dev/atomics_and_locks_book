@@ -1,11 +1,11 @@
-pub use std::{
+pub(crate) use std::{
     cell::UnsafeCell,
     collections::VecDeque,
     mem::MaybeUninit,
     ptr,
     sync::{
         atomic::{Ordering::*, *},
-        Condvar, Mutex,
+        Arc, Condvar, Mutex,
     },
     thread,
     time::Duration,
@@ -14,3 +14,4 @@ pub use std::{
 mod ch3;
 mod ch4;
 mod ch5;
+mod ch6;
