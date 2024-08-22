@@ -41,7 +41,7 @@ impl<T> SimpleChannel<T> {
 
     pub fn receive(&mut self) -> Result<T, PoisonError<MutexGuard<VecDeque<T>>>> {
         // lock the queue
-        let mut guard: std::sync::MutexGuard<VecDeque<T>> = self.queue.lock()?;
+        let mut guard = self.queue.lock()?;
 
         // receiving loop
         loop {
